@@ -1,0 +1,9 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+simplewebsocketserver = {editable = true, git = "https://github.com/dpallot/simple-websocket-server.git"}
+
+[dev-packages]
