@@ -1,9 +1,10 @@
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 import json
-
+from car import Car
 
 class SimpleEcho(WebSocket):
-
+    car = Car()
+    
     def handleMessage(self):
         # echo message back to client
         print(self.data)
@@ -12,7 +13,6 @@ class SimpleEcho(WebSocket):
         for k, v in data.items():
             if v:
                 newData[k] = v
-
         print(newData)
         self.sendMessage(json.dumps(newData))
 
