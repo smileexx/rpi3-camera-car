@@ -18,7 +18,7 @@ window.addEventListener("load", function(){
  */
 function RCSocket() {
     var _self = this;
-    var URL = "ws://127.0.0.1:8000/";
+    var URL = "ws://192.168.0.101:8000/";
     var websocket = null;
     var isConnected = false;
     var connectionCallback = function(){};
