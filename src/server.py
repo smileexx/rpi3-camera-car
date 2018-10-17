@@ -1,4 +1,4 @@
-import SocketServer
+import socketserver as SocketServer
 import hashlib
 import base64
 
@@ -9,7 +9,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
 
     def handle(self):
         # self.request is the TCP socket connected to the client
-        self.data = self.request.recv(1024).strip()
+        self.data = self.request.recv(1024).strip().decode('utf-8')
         headers = self.data.split("\r\n")
 
         # is it a websocket request?
@@ -38,14 +38,14 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
     def shake_hand(self, key):
         # calculating response as per protocol RFC
         key = key + WS_MAGIC_STRING
-        resp_key = base64.standard_b64encode(hashlib.sha1(key).digest())
+        resp_key = base64.standard_b64encode(hashlib.sha1(key.encode('utf-8')).digest())
 
         resp = "HTTP/1.1 101 Switching Protocols\r\n" + \
                "Upgrade: websocket\r\n" + \
                "Connection: Upgrade\r\n" + \
-               "Sec-WebSocket-Accept: %s\r\n\r\n" % (resp_key)
+               "Sec-WebSocket-Accept: %s\r\n\r\n" % resp_key.decode('utf-8')
 
-        self.request.sendall(resp)
+        self.request.sendall(resp.encode('utf-8'))
 
     def decode_frame(self, frame):
         opcode_and_fin = frame[0]
@@ -72,7 +72,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
 
 
 if __name__ == "__main__":
-    HOST, PORT = "localhost", 9999
+    HOST, PORT = "0.0.0.0", 46464
 
     # Create the server, binding to localhost on port 9999
     server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
