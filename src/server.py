@@ -9,7 +9,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
 
     def handle(self):
         # self.request is the TCP socket connected to the client
-        self.data = self.request.recv(1024).strip().decode('utf-8')
+        self.data = self.request.recv(16384).strip().decode('utf-8')
         headers = self.data.split("\r\n")
 
         # is it a websocket request?
@@ -22,7 +22,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
             self.shake_hand(key)
 
             while True:
-                payload = self.decode_frame(bytearray(self.request.recv(1024).strip()))
+                payload = self.decode_frame(bytearray(self.request.recv(16384).strip()))
                 decoded_payload = payload.decode('utf-8')
                 self.send_frame(payload)
                 if "bye" == decoded_payload.lower():
@@ -76,4 +76,4 @@ if __name__ == "__main__":
 
     # Create the server, binding to localhost on port 9999
     server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
-    server.serve_forever()
+    server.serve_forever(5)
