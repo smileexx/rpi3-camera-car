@@ -1,7 +1,7 @@
 // run code on load
 window.addEventListener("load", function(){
 
-    var rc = new RCSocket();
+    window.rc = new RCSocket();
     var game = new Game( { rc: rc } );
     game.start();
     rc.init( function () {

@@ -50,9 +50,13 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
                         continue
 
                     decoded_payload = payload.decode('utf-8').strip()
-                    b = "{0:08b}".format(int(decoded_payload))
+                    b = "{0:07b}".format(int(decoded_payload))
 
                     self.send_frame(bytearray(b.encode()))  # response to message
+
+                    # TODO find better way to set signals to Car thread
+                    self.server._car.parse_bit_state(b)
+
                     if "bye" == decoded_payload.lower():
                         "Bidding goodbye to our client..."
                         return
@@ -110,13 +114,3 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         frame_to_send = bytearray(frame) + payload
 
         self.request.sendall(frame_to_send)
-
-
-if __name__ == "__main__":
-    server_address = ("0.0.0.0", 46464)
-    server = SocketServer.TCPServer(server_address, MyTCPHandler)
-    try:
-        server.serve_forever(5)
-    except KeyboardInterrupt:
-        pass
-        server.server_close()

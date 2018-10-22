@@ -1,54 +1,91 @@
 # import RPi.GPIO as GPIO
+import threading
 from time import sleep
+import socketserver as SocketServer
+from server import MyTCPHandler
+
+lock = threading.Lock()
 
 
 class Car:
-    keyUp = False
-    keyDown = False
-    keyLeft = False
-    keyRight = False
+    key_up = False
+    key_down = False
+    key_left = False
+    key_right = False
     loop = True
 
+    mask = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Alt", "Shift", "Control"]
+
     def __init__(self):
-        print("Car init")
+        server_address = ("0.0.0.0", 46464)
+        server = SocketServer.TCPServer(server_address, MyTCPHandler)
+        server._car = self
+        self._server = server
+
+        print("init car")
+        self.reset_gpio()
+        self.run_server()
+        self.run()
+
+    def reset_gpio(self):
+        # reset all GPIO pins
+        pass
+
+    def run(self):
+        print("Car run")
         while self.loop:
-            self.gameLoop()
-            sleep(1)  # 100ms
+            try:
+                self.game_loop()
+                sleep(0.1)  # 100ms
+            except KeyboardInterrupt:
+                self.loop = False
+                return 0
+            except Exception as ex:
+                print("ERROR in Car loop. %s" % ex)
 
-    def gameLoop(self):
-        if self.keyUp and self.keyDown:
-            self.keyUp = False
-            self.keyDown = False
+    def run_server(self):
+        print("Server run")
 
-        if self.keyLeft and self.keyRight:
-            self.keyLeft = False
-            self.keyRight = False
+        t = threading.Thread(target=self._server.serve_forever)
+        t.setDaemon(True)  # don't hang on exit
+        t.start()
 
-        if not (self.keyUp and self.keyDown and self.keyLeft and self.keyRight):
-            print("Stop all engines")
+    def game_loop(self):
+        if self.key_up and self.key_down:
+            self.key_up = False
+            self.key_down = False
+
+        if self.key_left and self.key_right:
+            self.key_left = False
+            self.key_right = False
+
+        if not (self.key_up or self.key_down or self.key_left or self.key_right):
+            # print("Stop all engines")
             return 0
 
-        if self.keyUp:
+        if self.key_up:
             print("Car forward")
-        elif self.keyDown:
-            print("Car forward")
-        else:
-            print("Stop move engine")
+        elif self.key_down:
+            print("Car move back")
 
-        if self.keyLeft:
+        if self.key_left:
             print("Car turn left")
-        elif self.keyRight:
+        elif self.key_right:
             print("Car turn right")
-        else:
-            print("Stop rotate engine")
 
-
-    def changeState(self, key, value):
+    def change_state(self, key, value):
         if key == 'ArrowUp':
-            self.keyUp = value
+            self.key_up = value
         elif key == 'ArrowDown':
-            self.keyDown = value
+            self.key_down = value
         elif key == 'ArrowLeft':
-            self.keyLeft = value
+            self.key_left = value
         elif key == 'ArrowRight':
-            self.keyRight = value
+            self.key_right = value
+
+    def parse_bit_state(self, data):
+        print(data)
+        lock.acquire()
+        for index, key in enumerate(self.mask):
+            self.change_state(key, bool(data[index] == '1'))
+        lock.release()
