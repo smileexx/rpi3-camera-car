@@ -3,13 +3,16 @@ import hashlib
 import base64
 
 WS_MAGIC_STRING = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+BUF_LEN = 1024
+OP_TEXT = 129  # \x81
+OP_CLOSE = 136  # \x88
 
 
 class MyTCPHandler(SocketServer.BaseRequestHandler):
 
     def handle(self):
         # self.request is the TCP socket connected to the client
-        self.data = self.request.recv(16384).strip().decode('utf-8')
+        self.data = self.request.recv(BUF_LEN).strip().decode('utf-8')
         headers = self.data.split("\r\n")
 
         # is it a websocket request?
@@ -22,12 +25,41 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
             self.shake_hand(key)
 
             while True:
-                payload = self.decode_frame(bytearray(self.request.recv(16384).strip()))
-                decoded_payload = payload.decode('utf-8')
-                self.send_frame(payload)
-                if "bye" == decoded_payload.lower():
-                    "Bidding goodbye to our client..."
+                frame = ''
+                payload = bytearray()
+                decoded_payload = ''
+                try:
+                    frame = self.request.recv(BUF_LEN).strip()
+                    # print("in_data : %s" % frame)
+                    # print("FIN : %s" % frame[0])
+
+                    if len(frame) < 1:
+                        print("Empty data error. Close connection")
+                        return
+
+                    if frame[0] == OP_CLOSE:
+                        print("Connection closed by client")
+                        return
+
+                    if frame[0] != OP_TEXT:
+                        print("Wrong packet opcode: %s. Close connection" % frame[0])
+                        return
+
+                    payload = self.decode_frame(bytearray(frame))
+                    if len(payload) < 1:
+                        continue
+
+                    decoded_payload = payload.decode('utf-8').strip()
+                    b = "{0:08b}".format(int(decoded_payload))
+
+                    self.send_frame(bytearray(b.encode()))  # response to message
+                    if "bye" == decoded_payload.lower():
+                        "Bidding goodbye to our client..."
+                        return
+                except Exception as exp:
+                    print("Error: %s\r\n%s\r\n%s" % (exp, frame, payload))
                     return
+
         else:
             self.request.sendall("HTTP/1.1 400 Bad Request\r\n" + \
                                  "Content-Type: text/plain\r\n" + \
@@ -48,17 +80,26 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         self.request.sendall(resp.encode('utf-8'))
 
     def decode_frame(self, frame):
-        opcode_and_fin = frame[0]
+        length = frame[1] & 127  # may not be the  actual length in the two special cases
 
-        # assuming it's masked, hence removing the mask bit(MSB) to get len. also assuming len is <125
-        payload_len = frame[1] - 128
+        index_first_mask = 2  # if not a  special case
 
-        mask = frame[2:6]
-        encrypted_payload = frame[6: 6 + payload_len]
+        if length == 126:  # if a special case, change indexFirstMask
+            index_first_mask = 4
 
-        payload = bytearray([encrypted_payload[i] ^ mask[i % 4] for i in range(payload_len)])
+        elif length == 127:  # ditto
+            index_first_mask = 10
 
-        return payload
+        masks = frame[index_first_mask: 4 + index_first_mask]  # four bytes starting from indexFirstMask
+
+        index_first_data_byte = index_first_mask + 4  # four bytes further
+
+        real_length = len(frame) - index_first_data_byte  # length of real data
+        encrypted_payload = frame[index_first_data_byte: index_first_data_byte + real_length]
+
+        decoded = bytearray([encrypted_payload[i] ^ masks[i % 4] for i in range(real_length)])
+
+        return decoded
 
     def send_frame(self, payload):
         # setting fin to 1 and opcpde to 0x1
@@ -72,8 +113,10 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
 
 
 if __name__ == "__main__":
-    HOST, PORT = "0.0.0.0", 46464
-
-    # Create the server, binding to localhost on port 9999
-    server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
-    server.serve_forever(5)
+    server_address = ("0.0.0.0", 46464)
+    server = SocketServer.TCPServer(server_address, MyTCPHandler)
+    try:
+        server.serve_forever(5)
+    except KeyboardInterrupt:
+        pass
+        server.server_close()

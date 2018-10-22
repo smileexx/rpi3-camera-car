@@ -44,6 +44,7 @@ function RCSocket() {
 
     function doConnect() {
         websocket = new WebSocket(URL);
+        // websocket.binaryType = 'arraybuffer';
 
         websocket.onopen = function (evt) {
             onOpen(evt);
@@ -109,6 +110,8 @@ function Game( options ) {
         keyShift = "Shift",
         keyCtrl = "Control";
 
+    const mask = [ "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Alt", "Shift", "Control" ];
+
     var CONTROLS = {
         // define keys
         ArrowUp: false,
@@ -138,7 +141,9 @@ function Game( options ) {
 
             // send sate
             // console.log(CONTROLS);
-            rc.send(currentControll);
+            var enc = encode(CONTROLS);
+            console.log(enc);
+            rc.send(enc);
         }
 
     }
@@ -179,7 +184,7 @@ function Game( options ) {
 
         // init game loop
         _self.stop();
-        gameLoopInterval = setInterval(gameLoop, 200);
+        gameLoopInterval = setInterval(gameLoop, 50);
     };
 
     this.stop = function() {
@@ -187,6 +192,17 @@ function Game( options ) {
             clearInterval(gameLoopInterval);
         }
     };
+
+    /**
+     * Encode pressed keys to bit mask
+     */
+    function encode( controls ){
+        var res = '';
+        mask.forEach(function(item, pos, arr) {
+            res += controls[ item ] ? '1' : '0';
+        });
+        return parseInt(res, 2);
+    }
 }
 
 
