@@ -16,4 +16,23 @@ In `main.js` set up a WebSocket server address `ws://192.168.0.101:46464`. This 
 
 We use method `Game::encode` for make a 'bit mask' representation of our control keys state and encode it to int.
 
-For example, forward command (ArrowUp) will be a value = `'100000'` and than encoded to int = `32`. 
+For example, forward command (ArrowUp) will be a value = `'100000'` and than encoded to int = `32`.
+
+
+
+### Server 
+Server will contains at least three different subjects:
+
+1. ffmpeg & ffserver for streaming live from webcam
+2. WebSocket server and handling signals from client
+3. Manage hardware with GPOI
+
+
+
+#### Some useful info
+GPOI Docs: https://sourceforge.net/p/raspberry-gpio-python/wiki/BasicUsage/
+
+PWM:
+
+https://sourceforge.net/p/raspberry-gpio-python/wiki/PWM/
+https://www.mbtechworks.com/projects/raspberry-pi-pwm.html
