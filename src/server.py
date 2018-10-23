@@ -50,7 +50,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
                         continue
 
                     decoded_payload = payload.decode('utf-8').strip()
-                    b = "{0:07b}".format(int(decoded_payload))
+                    b = "{0:06b}".format(int(decoded_payload))
 
                     self.send_frame(bytearray(b.encode()))  # response to message
 

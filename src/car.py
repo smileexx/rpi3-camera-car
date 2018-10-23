@@ -14,7 +14,7 @@ class Car:
     key_right = False
     loop = True
 
-    mask = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Alt", "Shift", "Control"]
+    mask = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Shift", "Control"]
 
     def __init__(self):
         server_address = ("0.0.0.0", 46464)

@@ -110,7 +110,7 @@ function Game( options ) {
         keyShift = "Shift",
         keyCtrl = "Control";
 
-    const mask = [ "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Alt", "Shift", "Control" ];
+    const mask = [ "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Shift", "Control" ];
 
     var CONTROLS = {
         // define keys
@@ -155,7 +155,7 @@ function Game( options ) {
                 case "ArrowDown":
                 case "ArrowLeft":
                 case "ArrowRight":
-                case "Alt":
+                // case "Alt":
                 case "Shift":
                 case "Control":
                     CONTROLS[ e.key ] = true;
@@ -169,7 +169,7 @@ function Game( options ) {
                 case "ArrowDown":
                 case "ArrowLeft":
                 case "ArrowRight":
-                case "Alt":
+                // case "Alt":
                 case "Shift":
                 case "Control":
                     CONTROLS[ e.key ] = false;
