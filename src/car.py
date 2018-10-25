@@ -6,11 +6,20 @@ from server import MyTCPHandler
 
 lock = threading.Lock()
 
-MM_L_PIN = 17    # Move motor level pin PWM
+# DM - Drive Move pins
+PIN_DM_SIGNAL = 22
+PIN_DM_FWD = 17     # pin to move forward
+PIN_DM_BW = 27      # to move backward
+
+# DR - Drive Rotate pins
+PIN_DR_SIGNAL = 13
+PIN_DR_L = 5        # pin to turn left
+PIN_DR_R = 6        # turn right
+
 
 class Car:
-    MM = None
-    MM_DC = 0
+    DM_PWM = None
+    DR_PWM = None
     
     key_up = False
     key_down = False
@@ -41,11 +50,13 @@ class Car:
                 self.game_loop()
                 sleep(0.1)  # 100ms
             except KeyboardInterrupt:
+                print("Stop on KeyboardInterrupt")
                 self.loop = False
                 self.reset_gpio()
                 return 0
             except Exception as ex:
                 print("ERROR in Car loop. %s" % ex)
+                self.loop = False
                 self.reset_gpio()
 
     def run_server(self):
@@ -71,9 +82,10 @@ class Car:
 
         if self.key_up:
             print("Car forward")
-            self.move_motor(1)
+            self.move_motor(True)
         elif self.key_down:
             print("Car move back")
+            self.move_motor(True, False)
 
         if self.key_left:
             print("Car turn left")
@@ -96,31 +108,31 @@ class Car:
         for index, key in enumerate(self.mask):
             self.change_state(key, bool(data[index] == '1'))
         lock.release()
-       
+
     def init_pins(self):
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)        
-        
-        GPIO.setup(MM_L_PIN, GPIO.OUT)
-        self.MM = GPIO.PWM(MM_L_PIN, 100)
-       
+        """Initialize all hardware here"""
+        self.reset_gpio()
+        GPIO.setmode(GPIO.BCM)      # Set pin numbers mode
+        GPIO.setwarnings(False)     # Disable warning about pins in use
+        chan_list = [PIN_DM_SIGNAL, PIN_DM_FWD, PIN_DM_BW, PIN_DR_SIGNAL, PIN_DR_L, PIN_DR_R]
+        GPIO.setup(chan_list, GPIO.OUT)     # init all pins as OUT
+        # init PWM
+        self.DM_PWM = GPIO.PWM(PIN_DM_SIGNAL, 50)  # frequency=50Hz
+        self.DR_PWM = GPIO.PWM(PIN_DR_SIGNAL, 50)  # frequency=50Hz
+
     def reset_gpio(self):
         GPIO.cleanup()
-       
-    def move_motor(self, pow = 0):
-        if pow:
-            if self.MM_DC <= 10:
-                self.MM_DC = 20
-                self.MM.start(10)
-                sleep(0.2)
-            elif self.MM_DC <= 20:
-                self.MM_DC = 50
-                self.MM.start(20)
-                sleep(0.2)
-            else:
-                self.MM.ChangeDutyCycle(self.MM_DC)
-        else:
-            self.MM_DC = 0
-            self.MM.stop()
 
-    
+    def move_motor(self, power=False, forward=True):
+        if power:
+            if forward:
+                GPIO.output(PIN_DM_FWD, GPIO.HIGH)
+                GPIO.output(PIN_DM_BW, GPIO.LOW)
+            else:
+                GPIO.output(PIN_DM_FWD, GPIO.LOW)
+                GPIO.output(PIN_DM_BW, GPIO.HIGH)
+            self.DM_PWM.start(30)
+        else:
+            GPIO.output(PIN_DM_FWD, GPIO.LOW)
+            GPIO.output(PIN_DM_BW, GPIO.LOW)
+            self.DM_PWM.stop()
