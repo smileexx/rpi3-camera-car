@@ -8,19 +8,19 @@ lock = threading.Lock()
 
 # DM - Drive Move pins
 PIN_DM_SIGNAL = 22
-PIN_DM_FWD = 17     # pin to move forward
-PIN_DM_BW = 27      # to move backward
+PIN_DM_FWD = 17  # pin to move forward
+PIN_DM_BW = 27  # to move backward
 
 # DR - Drive Rotate pins
 PIN_DR_SIGNAL = 13
-PIN_DR_L = 5        # pin to turn left
-PIN_DR_R = 6        # turn right
+PIN_DR_L = 5  # pin to turn left
+PIN_DR_R = 6  # turn right
 
 
 class Car:
     DM_PWM = None
     DR_PWM = None
-    
+
     key_up = False
     key_down = False
     key_left = False
@@ -32,17 +32,17 @@ class Car:
     def __init__(self):
         print("init hardware")
         self.init_pins()
-        
+
         print("init server")
         server_address = ("0.0.0.0", 46464)
         server = SocketServer.TCPServer(server_address, MyTCPHandler)
         server._car = self
         self._server = server
-        
+
         print("init car")
         self.run_server()
         self.run()
-        
+
     def run(self):
         print("Car run")
         while self.loop:
@@ -77,7 +77,7 @@ class Car:
 
         if not (self.key_up or self.key_down or self.key_left or self.key_right):
             # print("Stop all engines")
-            self.move_motor()
+            self.move_motor(False)
             return 0
 
         if self.key_up:
@@ -89,8 +89,10 @@ class Car:
 
         if self.key_left:
             print("Car turn left")
+            self.rotate_motor(True)
         elif self.key_right:
             print("Car turn right")
+            self.rotate_motor(True, False)
 
     def change_state(self, key, value):
         if key == 'ArrowUp':
@@ -112,16 +114,20 @@ class Car:
     def init_pins(self):
         """Initialize all hardware here"""
         self.reset_gpio()
-        GPIO.setmode(GPIO.BCM)      # Set pin numbers mode
-        GPIO.setwarnings(False)     # Disable warning about pins in use
+        GPIO.setmode(GPIO.BCM)  # Set pin numbers mode
+        GPIO.setwarnings(False)  # Disable warning about pins in use
         chan_list = [PIN_DM_SIGNAL, PIN_DM_FWD, PIN_DM_BW, PIN_DR_SIGNAL, PIN_DR_L, PIN_DR_R]
-        GPIO.setup(chan_list, GPIO.OUT)     # init all pins as OUT
+        GPIO.setup(chan_list, GPIO.OUT)  # init all pins as OUT
         # init PWM
         self.DM_PWM = GPIO.PWM(PIN_DM_SIGNAL, 50)  # frequency=50Hz
         self.DR_PWM = GPIO.PWM(PIN_DR_SIGNAL, 50)  # frequency=50Hz
 
     def reset_gpio(self):
-        GPIO.cleanup()
+        try:
+            GPIO.cleanup()
+        except:
+            print("Nothing to clear in GPIO")
+            pass
 
     def move_motor(self, power=False, forward=True):
         if power:
@@ -136,3 +142,17 @@ class Car:
             GPIO.output(PIN_DM_FWD, GPIO.LOW)
             GPIO.output(PIN_DM_BW, GPIO.LOW)
             self.DM_PWM.stop()
+
+    def rotate_motor(self, power=False, left=True):
+        if power:
+            if left:
+                GPIO.output(PIN_DR_L, GPIO.HIGH)
+                GPIO.output(PIN_DR_R, GPIO.LOW)
+            else:
+                GPIO.output(PIN_DR_L, GPIO.LOW)
+                GPIO.output(PIN_DR_R, GPIO.HIGH)
+            self.DR_PWM.start(30)
+        else:
+            GPIO.output(PIN_DR_L, GPIO.LOW)
+            GPIO.output(PIN_DR_R, GPIO.LOW)
+            self.DR_PWM.stop()
