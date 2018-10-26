@@ -17,7 +17,7 @@ PIN_DR_L = 5  # pin to turn left
 PIN_DR_R = 6  # turn right
 
 MOTOR_FREQ = 50
-MOTOR_DC = 50
+MOTOR_DC = 70
 
 
 class Car:
@@ -140,14 +140,15 @@ class Car:
     def move_motor(self, power=False, forward=True):
         if power:
             if forward:
+                print('FWD')
                 GPIO.output(PIN_DM_FWD, GPIO.HIGH)
                 GPIO.output(PIN_DM_BW, GPIO.LOW)
             else:
+                print('BW')
                 GPIO.output(PIN_DM_FWD, GPIO.LOW)
                 GPIO.output(PIN_DM_BW, GPIO.HIGH)
-
             self.DM_PWM.ChangeDutyCycle(MOTOR_DC)
-
+            sleep(0.02)
         else:
             GPIO.output(PIN_DM_FWD, GPIO.LOW)
             GPIO.output(PIN_DM_BW, GPIO.LOW)
@@ -162,9 +163,7 @@ class Car:
             else:
                 GPIO.output(PIN_DR_L, GPIO.LOW)
                 GPIO.output(PIN_DR_R, GPIO.HIGH)
-
             self.DR_PWM.ChangeDutyCycle(MOTOR_DC)
-
         else:
             GPIO.output(PIN_DR_L, GPIO.LOW)
             GPIO.output(PIN_DR_R, GPIO.LOW)
