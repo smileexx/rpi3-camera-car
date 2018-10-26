@@ -122,9 +122,13 @@ class Car:
         GPIO.setwarnings(False)  # Disable warning about pins in use
         chan_list = [PIN_DM_SIGNAL, PIN_DM_FWD, PIN_DM_BW, PIN_DR_SIGNAL, PIN_DR_L, PIN_DR_R]
         GPIO.setup(chan_list, GPIO.OUT)  # init all pins as OUT
+
         # init PWM
         self.DM_PWM = GPIO.PWM(PIN_DM_SIGNAL, MOTOR_FREQ)  # frequency=50Hz
+        self.DM_PWM.start(0)
+
         self.DR_PWM = GPIO.PWM(PIN_DR_SIGNAL, MOTOR_FREQ)  # frequency=50Hz
+        self.DR_PWM.start(0)
 
     def reset_gpio(self):
         try:
@@ -141,10 +145,13 @@ class Car:
             else:
                 GPIO.output(PIN_DM_FWD, GPIO.LOW)
                 GPIO.output(PIN_DM_BW, GPIO.HIGH)
-            self.DM_PWM.start(MOTOR_DC)
+
+            self.DM_PWM.ChangeDutyCycle(MOTOR_DC)
+
         else:
             GPIO.output(PIN_DM_FWD, GPIO.LOW)
             GPIO.output(PIN_DM_BW, GPIO.LOW)
+            self.DM_PWM.ChangeDutyCycle(0)
             self.DM_PWM.stop()
 
     def rotate_motor(self, power=False, left=True):
@@ -155,8 +162,11 @@ class Car:
             else:
                 GPIO.output(PIN_DR_L, GPIO.LOW)
                 GPIO.output(PIN_DR_R, GPIO.HIGH)
-            self.DR_PWM.start(MOTOR_DC)
+
+            self.DR_PWM.ChangeDutyCycle(MOTOR_DC)
+
         else:
             GPIO.output(PIN_DR_L, GPIO.LOW)
             GPIO.output(PIN_DR_R, GPIO.LOW)
+            self.DR_PWM.ChangeDutyCycle(0)
             self.DR_PWM.stop()
