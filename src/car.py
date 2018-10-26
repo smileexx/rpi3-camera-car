@@ -147,13 +147,13 @@ class Car:
                 print('BW')
                 GPIO.output(PIN_DM_FWD, GPIO.LOW)
                 GPIO.output(PIN_DM_BW, GPIO.HIGH)
-            self.DM_PWM.ChangeDutyCycle(MOTOR_DC)
-            sleep(0.02)
+            self.DM_PWM.ChangeDutyCycle(70)
         else:
             GPIO.output(PIN_DM_FWD, GPIO.LOW)
             GPIO.output(PIN_DM_BW, GPIO.LOW)
             self.DM_PWM.ChangeDutyCycle(0)
             self.DM_PWM.stop()
+            print('stop move')
 
     def rotate_motor(self, power=False, left=True):
         if power:
@@ -163,9 +163,10 @@ class Car:
             else:
                 GPIO.output(PIN_DR_L, GPIO.LOW)
                 GPIO.output(PIN_DR_R, GPIO.HIGH)
-            self.DR_PWM.ChangeDutyCycle(MOTOR_DC)
+            self.DR_PWM.ChangeDutyCycle(70)
         else:
             GPIO.output(PIN_DR_L, GPIO.LOW)
             GPIO.output(PIN_DR_R, GPIO.LOW)
             self.DR_PWM.ChangeDutyCycle(0)
             self.DR_PWM.stop()
+            print('stop rotate')
