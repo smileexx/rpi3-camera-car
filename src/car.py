@@ -16,6 +16,9 @@ PIN_DR_SIGNAL = 13
 PIN_DR_L = 5  # pin to turn left
 PIN_DR_R = 6  # turn right
 
+MOTOR_FREQ = 50
+MOTOR_DC = 50
+
 
 class Car:
     DM_PWM = None
@@ -78,6 +81,7 @@ class Car:
         if not (self.key_up or self.key_down or self.key_left or self.key_right):
             # print("Stop all engines")
             self.move_motor(False)
+            self.rotate_motor(False)
             return 0
 
         if self.key_up:
@@ -119,8 +123,8 @@ class Car:
         chan_list = [PIN_DM_SIGNAL, PIN_DM_FWD, PIN_DM_BW, PIN_DR_SIGNAL, PIN_DR_L, PIN_DR_R]
         GPIO.setup(chan_list, GPIO.OUT)  # init all pins as OUT
         # init PWM
-        self.DM_PWM = GPIO.PWM(PIN_DM_SIGNAL, 50)  # frequency=50Hz
-        self.DR_PWM = GPIO.PWM(PIN_DR_SIGNAL, 50)  # frequency=50Hz
+        self.DM_PWM = GPIO.PWM(PIN_DM_SIGNAL, MOTOR_FREQ)  # frequency=50Hz
+        self.DR_PWM = GPIO.PWM(PIN_DR_SIGNAL, MOTOR_FREQ)  # frequency=50Hz
 
     def reset_gpio(self):
         try:
@@ -137,7 +141,7 @@ class Car:
             else:
                 GPIO.output(PIN_DM_FWD, GPIO.LOW)
                 GPIO.output(PIN_DM_BW, GPIO.HIGH)
-            self.DM_PWM.start(30)
+            self.DM_PWM.start(MOTOR_DC)
         else:
             GPIO.output(PIN_DM_FWD, GPIO.LOW)
             GPIO.output(PIN_DM_BW, GPIO.LOW)
@@ -151,7 +155,7 @@ class Car:
             else:
                 GPIO.output(PIN_DR_L, GPIO.LOW)
                 GPIO.output(PIN_DR_R, GPIO.HIGH)
-            self.DR_PWM.start(30)
+            self.DR_PWM.start(MOTOR_DC)
         else:
             GPIO.output(PIN_DR_L, GPIO.LOW)
             GPIO.output(PIN_DR_R, GPIO.LOW)
