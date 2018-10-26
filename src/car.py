@@ -24,6 +24,9 @@ class Car:
     DM_PWM = None
     DR_PWM = None
 
+    dm_state = False
+    dr_state = False
+
     key_up = False
     key_down = False
     key_left = False
@@ -138,7 +141,8 @@ class Car:
             pass
 
     def move_motor(self, power=False, forward=True):
-        if power:
+        if power and not self.dm_state:
+            self.dm_state = True
             if forward:
                 print('FWD')
                 GPIO.output(PIN_DM_FWD, GPIO.HIGH)
@@ -147,16 +151,18 @@ class Car:
                 print('BW')
                 GPIO.output(PIN_DM_FWD, GPIO.LOW)
                 GPIO.output(PIN_DM_BW, GPIO.HIGH)
-            self.DM_PWM.ChangeDutyCycle(70)
-        else:
+            self.DM_PWM.start(MOTOR_DC)
+        elif self.dm_state:
             GPIO.output(PIN_DM_FWD, GPIO.LOW)
             GPIO.output(PIN_DM_BW, GPIO.LOW)
             self.DM_PWM.ChangeDutyCycle(0)
             self.DM_PWM.stop()
+            self.dm_state = False
             print('stop move')
 
     def rotate_motor(self, power=False, left=True):
-        if power:
+        if power and not self.dr_state:
+            self.dr_state = True
             if left:
                 GPIO.output(PIN_DR_L, GPIO.HIGH)
                 GPIO.output(PIN_DR_R, GPIO.LOW)
@@ -164,9 +170,10 @@ class Car:
                 GPIO.output(PIN_DR_L, GPIO.LOW)
                 GPIO.output(PIN_DR_R, GPIO.HIGH)
             self.DR_PWM.ChangeDutyCycle(70)
-        else:
+        elif self.dr_state:
             GPIO.output(PIN_DR_L, GPIO.LOW)
             GPIO.output(PIN_DR_R, GPIO.LOW)
             self.DR_PWM.ChangeDutyCycle(0)
             self.DR_PWM.stop()
+            self.dr_state = False
             print('stop rotate')
