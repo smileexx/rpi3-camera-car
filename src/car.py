@@ -152,7 +152,7 @@ class Car:
                 GPIO.output(PIN_DM_FWD, GPIO.LOW)
                 GPIO.output(PIN_DM_BW, GPIO.HIGH)
             self.DM_PWM.start(MOTOR_DC)
-        elif self.dm_state:
+        elif not power and self.dm_state:
             GPIO.output(PIN_DM_FWD, GPIO.LOW)
             GPIO.output(PIN_DM_BW, GPIO.LOW)
             self.DM_PWM.ChangeDutyCycle(0)
@@ -170,7 +170,7 @@ class Car:
                 GPIO.output(PIN_DR_L, GPIO.LOW)
                 GPIO.output(PIN_DR_R, GPIO.HIGH)
             self.DR_PWM.ChangeDutyCycle(70)
-        elif self.dr_state:
+        elif power and self.dr_state:
             GPIO.output(PIN_DR_L, GPIO.LOW)
             GPIO.output(PIN_DR_R, GPIO.LOW)
             self.DR_PWM.ChangeDutyCycle(0)
