@@ -3,7 +3,7 @@
 This is my <del>(very first time)</del> first Python project. 
 And some else technologies like websocket and ffmpeg also new for me.
 
-Main goal of this project is to build RC car :oncoming_police_car: to annoying my cat while it stay alone.
+Main goal of this project is to build RC car :oncoming_police_car: to annoying my cat :cat2: while it stay alone.
 So "car" should controlled through WiFi and stream live from cam. 
 
 
