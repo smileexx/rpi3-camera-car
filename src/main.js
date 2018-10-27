@@ -8,6 +8,9 @@ window.addEventListener("load", function(){
         game.start();
     } );
 
+
+    var cam0 = document.getElementById('cam0');
+    cam0.src = "http://192.168.0.52:8090/camera1.mjpeg";
 }, false);
 
 
@@ -18,7 +21,7 @@ window.addEventListener("load", function(){
  */
 function RCSocket() {
     var _self = this;
-    var URL = "ws://192.168.0.101:46464";
+    var URL = "ws://192.168.0.52:46464";
     var websocket = null;
     var isConnected = false;
     var connectionCallback = function(){};
