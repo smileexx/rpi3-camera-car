@@ -16,8 +16,8 @@ PIN_DR_SIGNAL = 13
 PIN_DR_L = 5  # pin to turn left
 PIN_DR_R = 6  # turn right
 
-MOTOR_FREQ = 50
-MOTOR_DC = 70
+MOTOR_FREQ = 70
+MOTOR_DC = 80
 
 
 class Car:
@@ -93,6 +93,8 @@ class Car:
         elif self.key_down:
             print("Car move back")
             self.move_motor(True, False)
+        elif not (self.key_up or self.key_down):
+            self.move_motor(False)
 
         if self.key_left:
             print("Car turn left")
@@ -100,6 +102,8 @@ class Car:
         elif self.key_right:
             print("Car turn right")
             self.rotate_motor(True, False)
+        elif not(self.key_left or self.key_right):
+            self.rotate_motor(False)
 
     def change_state(self, key, value):
         if key == 'ArrowUp':
@@ -169,7 +173,7 @@ class Car:
             else:
                 GPIO.output(PIN_DR_L, GPIO.LOW)
                 GPIO.output(PIN_DR_R, GPIO.HIGH)
-            self.DR_PWM.ChangeDutyCycle(70)
+            self.DR_PWM.ChangeDutyCycle(100)
         elif not power and self.dr_state:
             GPIO.output(PIN_DR_L, GPIO.LOW)
             GPIO.output(PIN_DR_R, GPIO.LOW)
