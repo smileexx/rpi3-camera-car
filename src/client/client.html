@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
+    <link href="//vjs.zencdn.net/7.2/video-js.min.css" rel="stylesheet">
+    <script src="//vjs.zencdn.net/7.2/video.min.js"></script>
+
+
     <script src="main.js"></script>
     <style type="text/css">
-        html, body{
+        html, body {
             height: 100%;
             overflow: hidden;
         }
+
         #content {
             width: 90%;
             height: 90%;
@@ -16,6 +22,7 @@
             background-color: linen;
             padding: 15px;
         }
+
         #cam0 {
             border: 1px solid #a9a6a6;
             box-shadow: #a9a6a6 2px 4px 12px 2px;
@@ -23,21 +30,26 @@
             position: relative;
             float: left;
         }
-        #buttons{
+
+        #buttons {
             position: relative;
             float: left;
             margin-left: 30px;
         }
+
         .true, .active {
             color: green;
         }
+
         .false {
             color: darkred;
         }
+
         .non-active {
             color: #a9a6a6;
         }
-        .clear-float{
+
+        .clear-float {
             clear: both;
             height: 0;
         }
@@ -49,6 +61,8 @@
             <iframe id="cam0" name="cam0" width="640" height="480">
                 Stream will be here
             </iframe>
+
+
             <div id="buttons">
                 <h2>Buttons:</h2>
                 <div><span>Key Up: </span><span class="active">True</span></div>
