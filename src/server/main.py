@@ -12,7 +12,7 @@ if __name__ == "__main__":
     proc_ffserv = subprocess.Popen(cmd_ffserv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     # wait before run stream process
     sleep(3)
-    proc_ff = subprocess.Popen(cmd_ff)
+    proc_ff = subprocess.Popen(cmd_ff, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
     # run car
     car = Car()
