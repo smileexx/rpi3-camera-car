@@ -10,7 +10,7 @@ window.addEventListener("load", function(){
 
 
     var cam0 = document.getElementById('cam0');
-    cam0.src = "http://192.168.0.52:8090/camera1.mjpeg";
+    cam0.src = "http://192.168.0.52:8090/camera.mjpeg";
 }, false);
 
 

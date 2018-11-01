@@ -4,13 +4,20 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" type="text/css" href="common.css">
+    <script>
+        // run code on load
+        window.addEventListener("load", function () {
+            var cam0 = document.getElementById('cam0');
+            cam0.src = "http://192.168.0.52:8090/camera.mjpeg";
+        }, false);
+    </script>
 </head>
 <body>
     <div id="content">
         <iframe id="cam0" name="cam0" width="640" height="480">
             Stream will be here
         </iframe>
-        </div>
+    </div>
     </div>
 </body>
 </html>
