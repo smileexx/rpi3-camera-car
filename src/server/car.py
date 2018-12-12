@@ -8,8 +8,8 @@ lock = threading.Lock()
 
 # DM - Drive Move pins
 PIN_DM_SIGNAL = 22
-PIN_L_FWD = 17  # pin to move forward
-PIN_L_BW = 27  # to move backward
+PIN_L_FWD = 27  # pin to move forward
+PIN_L_BW = 17  # to move backward
 
 # DR - Drive Rotate pins
 PIN_DR_SIGNAL = 13
