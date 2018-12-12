@@ -8,13 +8,13 @@ lock = threading.Lock()
 
 # DM - Drive Move pins
 PIN_DM_SIGNAL = 22
-PIN_DM_FWD = 17  # pin to move forward
-PIN_DM_BW = 27  # to move backward
+PIN_L_FWD = 17  # pin to move forward
+PIN_L_BW = 27  # to move backward
 
 # DR - Drive Rotate pins
 PIN_DR_SIGNAL = 13
-PIN_DR_L = 5  # pin to turn left
-PIN_DR_R = 6  # turn right
+PIN_R_FWD = 5  # pin to turn left
+PIN_R_BW = 6  # turn right
 
 MOTOR_FREQ = 70
 MOTOR_DC = 80
@@ -24,8 +24,8 @@ class Car:
     DM_PWM = None
     DR_PWM = None
 
-    dm_state = False
-    dr_state = False
+    lm_state = False
+    rm_state = False
 
     key_up = False
     key_down = False
@@ -83,27 +83,31 @@ class Car:
 
         if not (self.key_up or self.key_down or self.key_left or self.key_right):
             # print("Stop all engines")
-            self.move_motor(False)
-            self.rotate_motor(False)
+            self.left_motor(False)
+            self.right_motor(False)
             return 0
 
         if self.key_up:
             print("Car forward")
-            self.move_motor(True)
+            self.left_motor(True)
+            self.right_motor(True)
         elif self.key_down:
             print("Car move back")
-            self.move_motor(True, False)
+            self.left_motor(True, False)
+            self.right_motor(True, False)
         elif not (self.key_up or self.key_down):
-            self.move_motor(False)
+            self.left_motor(False)
+            self.right_motor(False)
 
         if self.key_left:
             print("Car turn left")
-            self.rotate_motor(True)
+            self.right_motor(True)
         elif self.key_right:
             print("Car turn right")
-            self.rotate_motor(True, False)
+            self.left_motor(True)
         elif not(self.key_left or self.key_right):
-            self.rotate_motor(False)
+            self.left_motor(False)
+            self.right_motor(False)
 
     def change_state(self, key, value):
         if key == 'ArrowUp':
@@ -127,7 +131,7 @@ class Car:
         self.reset_gpio()
         GPIO.setmode(GPIO.BCM)  # Set pin numbers mode
         GPIO.setwarnings(False)  # Disable warning about pins in use
-        chan_list = [PIN_DM_SIGNAL, PIN_DM_FWD, PIN_DM_BW, PIN_DR_SIGNAL, PIN_DR_L, PIN_DR_R]
+        chan_list = [PIN_DM_SIGNAL, PIN_L_FWD, PIN_L_BW, PIN_DR_SIGNAL, PIN_R_FWD, PIN_R_BW]
         GPIO.setup(chan_list, GPIO.OUT)  # init all pins as OUT
 
         # init PWM
@@ -144,40 +148,82 @@ class Car:
             print("Nothing to clear in GPIO")
             pass
 
-    def move_motor(self, power=False, forward=True):
-        if power and not self.dm_state:
-            self.dm_state = True
+    def left_motor(self, power=False, forward=True):
+        if power and not self.lm_state:
+            self.lm_state = True
             if forward:
-                print('FWD')
-                GPIO.output(PIN_DM_FWD, GPIO.HIGH)
-                GPIO.output(PIN_DM_BW, GPIO.LOW)
+                print('Left FWD')
+                GPIO.output(PIN_L_FWD, GPIO.HIGH)
+                GPIO.output(PIN_L_BW, GPIO.LOW)
             else:
-                print('BW')
-                GPIO.output(PIN_DM_FWD, GPIO.LOW)
-                GPIO.output(PIN_DM_BW, GPIO.HIGH)
+                print('Left BW')
+                GPIO.output(PIN_L_FWD, GPIO.LOW)
+                GPIO.output(PIN_L_BW, GPIO.HIGH)
             self.DM_PWM.start(MOTOR_DC)
-        elif not power and self.dm_state:
-            GPIO.output(PIN_DM_FWD, GPIO.LOW)
-            GPIO.output(PIN_DM_BW, GPIO.LOW)
+        elif not power and self.lm_state:
+            GPIO.output(PIN_L_FWD, GPIO.LOW)
+            GPIO.output(PIN_L_BW, GPIO.LOW)
             self.DM_PWM.ChangeDutyCycle(0)
             self.DM_PWM.stop()
-            self.dm_state = False
-            print('stop move')
+            self.lm_state = False
+            print('stop Left')
 
-    def rotate_motor(self, power=False, left=True):
-        if power and not self.dr_state:
-            self.dr_state = True
-            if left:
-                GPIO.output(PIN_DR_L, GPIO.HIGH)
-                GPIO.output(PIN_DR_R, GPIO.LOW)
+    def right_motor(self, power=False, forward=True):
+        if power and not self.rm_state:
+            self.rm_state = True
+            if forward:
+                print('Right FWD')
+                GPIO.output(PIN_L_FWD, GPIO.HIGH)
+                GPIO.output(PIN_L_BW, GPIO.LOW)
             else:
-                GPIO.output(PIN_DR_L, GPIO.LOW)
-                GPIO.output(PIN_DR_R, GPIO.HIGH)
-            self.DR_PWM.ChangeDutyCycle(100)
-        elif not power and self.dr_state:
-            GPIO.output(PIN_DR_L, GPIO.LOW)
-            GPIO.output(PIN_DR_R, GPIO.LOW)
-            self.DR_PWM.ChangeDutyCycle(0)
-            self.DR_PWM.stop()
-            self.dr_state = False
-            print('stop rotate')
+                print('Right BW')
+                GPIO.output(PIN_L_FWD, GPIO.LOW)
+                GPIO.output(PIN_L_BW, GPIO.HIGH)
+            self.DM_PWM.start(MOTOR_DC)
+        elif not power and self.rm_state:
+            GPIO.output(PIN_L_FWD, GPIO.LOW)
+            GPIO.output(PIN_L_BW, GPIO.LOW)
+            self.DM_PWM.ChangeDutyCycle(0)
+            self.DM_PWM.stop()
+            self.rm_state = False
+            print('stop Right')
+
+
+    #
+    # def move_motor(self, power=False, forward=True):
+    #     if power and not self.lm_state:
+    #         self.lm_state = True
+    #         if forward:
+    #             print('FWD')
+    #             GPIO.output(PIN_L_FWD, GPIO.HIGH)
+    #             GPIO.output(PIN_L_BW, GPIO.LOW)
+    #         else:
+    #             print('BW')
+    #             GPIO.output(PIN_L_FWD, GPIO.LOW)
+    #             GPIO.output(PIN_L_BW, GPIO.HIGH)
+    #         self.DM_PWM.start(MOTOR_DC)
+    #     elif not power and self.lm_state:
+    #         GPIO.output(PIN_L_FWD, GPIO.LOW)
+    #         GPIO.output(PIN_L_BW, GPIO.LOW)
+    #         self.DM_PWM.ChangeDutyCycle(0)
+    #         self.DM_PWM.stop()
+    #         self.lm_state = False
+    #         print('stop move')
+    #
+    # def rotate_motor(self, power=False, left=True):
+    #     if power and not self.dr_state:
+    #         self.dr_state = True
+    #         if left:
+    #             GPIO.output(PIN_R_FWD, GPIO.HIGH)
+    #             GPIO.output(PIN_R_BW, GPIO.LOW)
+    #         else:
+    #             GPIO.output(PIN_R_FWD, GPIO.LOW)
+    #             GPIO.output(PIN_R_BW, GPIO.HIGH)
+    #         self.DR_PWM.ChangeDutyCycle(100)
+    #     elif not power and self.dr_state:
+    #         GPIO.output(PIN_R_FWD, GPIO.LOW)
+    #         GPIO.output(PIN_R_BW, GPIO.LOW)
+    #         self.DR_PWM.ChangeDutyCycle(0)
+    #         self.DR_PWM.stop()
+    #         self.dr_state = False
+    #         print('stop rotate')
