@@ -173,16 +173,16 @@ class Car:
             self.rm_state = True
             if forward:
                 print('Right FWD')
-                GPIO.output(PIN_L_FWD, GPIO.HIGH)
-                GPIO.output(PIN_L_BW, GPIO.LOW)
+                GPIO.output(PIN_R_FWD, GPIO.HIGH)
+                GPIO.output(PIN_R_BW, GPIO.LOW)
             else:
                 print('Right BW')
-                GPIO.output(PIN_L_FWD, GPIO.LOW)
-                GPIO.output(PIN_L_BW, GPIO.HIGH)
+                GPIO.output(PIN_R_FWD, GPIO.LOW)
+                GPIO.output(PIN_R_BW, GPIO.HIGH)
             self.DM_PWM.start(MOTOR_DC)
         elif not power and self.rm_state:
-            GPIO.output(PIN_L_FWD, GPIO.LOW)
-            GPIO.output(PIN_L_BW, GPIO.LOW)
+            GPIO.output(PIN_R_FWD, GPIO.LOW)
+            GPIO.output(PIN_R_BW, GPIO.LOW)
             self.DM_PWM.ChangeDutyCycle(0)
             self.DM_PWM.stop()
             self.rm_state = False
