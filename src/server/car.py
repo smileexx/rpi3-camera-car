@@ -99,15 +99,15 @@ class Car:
             self.left_motor(False)
             self.right_motor(False)
 
-        if self.key_left:
-            print("Car turn left")
-            self.right_motor(True)
-        elif self.key_right:
-            print("Car turn right")
-            self.left_motor(True)
-        elif not(self.key_left or self.key_right):
-            self.left_motor(False)
-            self.right_motor(False)
+        # if self.key_left:
+        #     print("Car turn left")
+        #     self.right_motor(True)
+        # elif self.key_right:
+        #     print("Car turn right")
+        #     self.left_motor(True)
+        # elif not(self.key_left or self.key_right):
+        #     self.left_motor(False)
+        #     self.right_motor(False)
 
     def change_state(self, key, value):
         if key == 'ArrowUp':
