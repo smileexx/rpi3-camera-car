@@ -73,6 +73,9 @@ class Car:
         t.start()
 
     def game_loop(self):
+        vector = True
+        left = False
+        right = False
         if self.key_up and self.key_down:
             self.key_up = False
             self.key_down = False
@@ -87,27 +90,22 @@ class Car:
             self.right_motor(False)
             return 0
 
-        if self.key_up:
+        if self.key_left:
+            print("Car left")
+            self.left_motor(False)
+            self.right_motor(True)
+        elif self.key_right:
+            print("Car right")
+            self.left_motor(True)
+            self.right_motor(False)
+        elif self.key_up:
             print("Car forward")
             self.left_motor(True)
             self.right_motor(True)
         elif self.key_down:
-            print("Car move back")
+            print("Car back")
             self.left_motor(True, False)
             self.right_motor(True, False)
-        elif not (self.key_up or self.key_down):
-            self.left_motor(False)
-            self.right_motor(False)
-
-        # if self.key_left:
-        #     print("Car turn left")
-        #     self.right_motor(True)
-        # elif self.key_right:
-        #     print("Car turn right")
-        #     self.left_motor(True)
-        # elif not(self.key_left or self.key_right):
-        #     self.left_motor(False)
-        #     self.right_motor(False)
 
     def change_state(self, key, value):
         if key == 'ArrowUp':
