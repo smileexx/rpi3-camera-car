@@ -9,6 +9,11 @@
 <body>
     <div id="content">
         <div>
+            <label>Host:</label>
+            <input id="carhost" placeholder="192.168.0.0" name="carhost" value="192.168.0.52">
+            <button onclick="doConnection();">Connect</button>
+        </div>
+        <div>
             <iframe id="cam0" name="cam0" width="640" height="480">
                 Stream will be here
             </iframe>

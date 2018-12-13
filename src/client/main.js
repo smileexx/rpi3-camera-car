@@ -1,16 +1,16 @@
 // run code on load
 window.addEventListener("load", function(){
 
-    window.rc = new RCSocket();
-    var game = new Game( { rc: rc } );
-    game.start();
-    rc.init( function () {
-        game.start();
-    } );
-
-
-    var cam0 = document.getElementById('cam0');
-    cam0.src = "http://192.168.0.52:8090/camera.mjpeg";
+    // window.rc = new RCSocket();
+    // var game = new Game( { rc: rc } );
+    // game.start();
+    // rc.init( function () {
+    //     game.start();
+    // } );
+    //
+    //
+    // var cam0 = document.getElementById('cam0');
+    // cam0.src = "http://192.168.0.52:8090/camera.mjpeg";
 }, false);
 
 
@@ -21,7 +21,7 @@ window.addEventListener("load", function(){
  */
 function RCSocket() {
     var _self = this;
-    var URL = "ws://192.168.0.52:46464";
+    var URL = "ws://" + window.carHost + ":46464";
     var websocket = null;
     var isConnected = false;
     var connectionCallback = function(){};
@@ -33,7 +33,9 @@ function RCSocket() {
 
     this.disconnect = function () {
         isConnected = false;
-        websocket.close();
+        if( websocket && websocket.readyState < 3) {
+            websocket.close();
+        }
     };
 
     this.send = function (msg) {
@@ -233,5 +235,23 @@ function Game( options ) {
 }
 
 
+function doConnection() {
 
+        if( window.rc ) {
+            window.rc.disconnect();
+        }
+
+    window.carHost = document.getElementById('carhost').value;
+
+    window.rc = new RCSocket();
+    var game = new Game( { rc: rc } );
+    // game.start();
+    rc.init( function () {
+        game.start();
+    } );
+
+
+    var cam0 = document.getElementById('cam0');
+    cam0.src = "http://" + window.carHost + ":8090/camera.mjpeg";
+}
 
