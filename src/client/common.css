@@ -41,3 +41,41 @@ html, body {
     clear: both;
     height: 0;
 }
+
+
+#joystick{
+    position: absolute;
+    bottom: 150px;
+    right:  150px;
+    border: 1px solid black;
+    width: 150px;
+    height: 150px;
+}
+
+#joystick .joystick-btn{
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    background-color: cornflowerblue;
+}
+
+#j-up{
+    top:0;
+    left: 50px;
+}
+
+#j-right{
+    right: 0;
+    top: 50px;
+}
+
+#j-down{
+    bottom: 0;
+    left: 50px;
+}
+
+#j-left{
+    left: 0;
+    top: 50px;
+}

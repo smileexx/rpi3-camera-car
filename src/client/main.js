@@ -151,35 +151,59 @@ function Game( options ) {
 
     }
 
+    function keydownListener ( key ){
+            switch (key) {
+                case "ArrowUp":
+                case "ArrowDown":
+                case "ArrowLeft":
+                case "ArrowRight":
+                // case "Alt":
+                case "Shift":
+                case "Control":
+                    CONTROLS[ key ] = true;
+                    break;
+            }
+        }
+
+    function keyupListener( key ){
+            switch (key) {
+                case "ArrowUp":
+                case "ArrowDown":
+                case "ArrowLeft":
+                case "ArrowRight":
+                // case "Alt":
+                case "Shift":
+                case "Control":
+                    CONTROLS[ key ] = false;
+                    break;
+            }
+        }
+
     function initKeys() {
-        document.addEventListener('keydown', function( e ){
-            switch (e.key) {
-                case "ArrowUp":
-                case "ArrowDown":
-                case "ArrowLeft":
-                case "ArrowRight":
-                // case "Alt":
-                case "Shift":
-                case "Control":
-                    CONTROLS[ e.key ] = true;
-                    break;
-            }
+        document.addEventListener('keydown', function (ev) {
+            keydownListener(ev.key);
         });
 
-        document.addEventListener('keyup', function( e ){
-            switch (e.key) {
-                case "ArrowUp":
-                case "ArrowDown":
-                case "ArrowLeft":
-                case "ArrowRight":
-                // case "Alt":
-                case "Shift":
-                case "Control":
-                    CONTROLS[ e.key ] = false;
-                    break;
-            }
+        document.addEventListener('keyup', function (ev) {
+            keyupListener(ev.key);
         });
 
+        var classname = document.getElementsByClassName("joystick-btn");
+
+        for (var i = 0; i < classname.length; i++) {
+            classname[i].addEventListener('touchstart', function (ev) {
+                keydownListener(ev.target.dataset.move);
+            });
+            classname[i].addEventListener('mousedown', function (ev) {
+                keydownListener(ev.target.dataset.move);
+            });
+            classname[i].addEventListener('touchend', function (ev) {
+                keyupListener(ev.target.dataset.move);
+            });
+            classname[i].addEventListener('mouseup', function (ev) {
+                keyupListener(ev.target.dataset.move);
+            });
+        }
     }
 
     this.start = function() {
