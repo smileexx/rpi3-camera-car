@@ -159,12 +159,12 @@ class Car:
                 print('Left BW')
                 GPIO.output(PIN_L_FWD, GPIO.LOW)
                 GPIO.output(PIN_L_BW, GPIO.HIGH)
-            self.DM_PWM.start(MOTOR_DC)
+            # self.DM_PWM.start(MOTOR_DC)
         elif not power and self.lm_state:
             GPIO.output(PIN_L_FWD, GPIO.LOW)
             GPIO.output(PIN_L_BW, GPIO.LOW)
-            self.DM_PWM.ChangeDutyCycle(0)
-            self.DM_PWM.stop()
+            # self.DM_PWM.ChangeDutyCycle(0)
+            # self.DM_PWM.stop()
             self.lm_state = False
             print('stop Left')
 
@@ -179,12 +179,12 @@ class Car:
                 print('Right BW')
                 GPIO.output(PIN_R_FWD, GPIO.LOW)
                 GPIO.output(PIN_R_BW, GPIO.HIGH)
-            self.DM_PWM.start(MOTOR_DC)
+            # self.DM_PWM.start(MOTOR_DC)
         elif not power and self.rm_state:
             GPIO.output(PIN_R_FWD, GPIO.LOW)
             GPIO.output(PIN_R_BW, GPIO.LOW)
-            self.DM_PWM.ChangeDutyCycle(0)
-            self.DM_PWM.stop()
+            # self.DM_PWM.ChangeDutyCycle(0)
+            # self.DM_PWM.stop()
             self.rm_state = False
             print('stop Right')
 
