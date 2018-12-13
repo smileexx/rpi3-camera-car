@@ -92,12 +92,12 @@ class Car:
 
         if self.key_left:
             print("Car left")
-            self.left_motor(False)
-            self.right_motor(True)
-        elif self.key_right:
-            print("Car right")
             self.left_motor(True)
             self.right_motor(False)
+        elif self.key_right:
+            print("Car right")
+            self.left_motor(False)
+            self.right_motor(True)
         elif self.key_up:
             print("Car forward")
             self.left_motor(True)
