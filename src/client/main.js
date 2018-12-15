@@ -1,6 +1,7 @@
 // run code on load
 window.addEventListener("load", function(){
-
+    window.carHost = location.hostname;
+    document.getElementById('carhost').value = location.hostname;
     // window.rc = new RCSocket();
     // var game = new Game( { rc: rc } );
     // game.start();

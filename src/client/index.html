@@ -8,7 +8,7 @@
         // run code on load
         window.addEventListener("load", function () {
             var cam0 = document.getElementById('cam0');
-            cam0.src = "http://192.168.0.52:8090/camera.mjpeg";
+            cam0.src = "http://" + location.hostname + ":8090/camera.mjpeg";
         }, false);
     </script>
 </head>
